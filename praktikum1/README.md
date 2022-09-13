@@ -123,13 +123,37 @@ Langkah-langkah pembuatan kabel UTP pada dasarnya sama saja, yang mana urutan da
 
 ### 2.3 Langkah pembuatan kabel tipe Crossover
 
-Langkah-langkah untuk membuat kabel dengan jenis crossover hampir sama dengan jenis kabel straight. 
+Langkah-langkah untuk membuat kabel dengan jenis crossover hampir sama dengan jenis kabel straight. Perbedaannya hanya pada urutan warna pada ujung kabel yang kedua. Apabila ujung pertama memiliki urutan warna dengan standart B, maka ujung yang kedua memiliki urutan warna dengan standart A atau T568A. Urutan warna untuk standart A adalah
+
+1. Putih Hijau
+2. Hijau
+3. Putih Orange
+4. Biru
+5. Putih Biru
+6. Orange
+7. Putih Coklat
+8. Coklat
 
 ## 3. Pengetesan kabel UTP
 
+Pengetesan kabel UTP berfungsi untuk membuktikan apakah semua kabel yang ada di kabel utp sudah tersambung dengan konektornya. Apabila terjadi error, maka lampu testernya tidak akan menyala
+
 ### 3.1 Alat pengetesan
+
+Untuk melakukan pengetesan, kita membutuhkan alat yaitu LAN Tester. Contoh LAN Tester adalah sebagai berikut
+
+![Lan tester](asset/lantester.jpeg)
 
 ### 3.2 Cara pengetesan kabel
 
-1. Straight (foto) + Penjelasan
-2. Crossover (foto) + Penjelasan
+1. Straight
+
+    Untuk melakukan pengetesan, langkah-langkah yang bisa kita lakukan adalah
+    1. Masukkan ujung yang pertama ke bagian utama dari LAN Tester
+    2. Masukkan ujung yang kedua ke lubang RJ45 pada bagian remote.
+    3. Nyalakan LAN Tester dan lihat lampu yang bergerak. Pastikan semua lampu menyala secara urut
+
+2. Crossover
+
+    Langkah pengetesan dari kabel Crossover juga hampir sama dengan kabel Straight. Perbedaannya adalah waktu pengetesan, urutan lampu yang menyala adalah 3,6,1,4,5,2,7,8
+    
