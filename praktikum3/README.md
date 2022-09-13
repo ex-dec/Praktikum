@@ -26,6 +26,7 @@ setelah konfigurasi ip address sudah sesuai, aktifkan mode simulation pada packe
 ![simulation mode](asset/simulation.png)
 
 Setelah itu reset power cycle device nya
+
 ![powercycle](asset/power%20cycle1.png)
 
 ![reset power cycle](asset/powercycle2.png)
