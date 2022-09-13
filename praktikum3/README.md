@@ -25,6 +25,7 @@ setelah konfigurasi ip address sudah sesuai, aktifkan mode simulation pada packe
 
 ![simulation mode](asset/simulation.png)
 <figcaption align = "center"><b>Simulation Mode</b></figcaption>
+
 ![powercycle](asset/power%20cycle1.png)
 
 ![reset power cycle](asset/powercycle2.png)
