@@ -13,7 +13,25 @@ Cara kerja ARP memiliki konsep yang sama dari satu perangkat dengan perangkat ya
 3. Pesan balasan tersebut akhirnya diterima oleh pengirim asalnya dan tabel arp pun terisi dengan alamat dari perangkat yang membalas pesan tersebut.
 
 ## D. Real Case
-Untuk membuktikan hal tersebut, mari kita lakukan percobaan berikut ini. Sebelumnya siapkan terlebih dahulu 
+Untuk membuktikan hal tersebut, mari kita lakukan percobaan berikut ini. Sebelumnya siapkan terlebih dahulu topologi jaringan menggunakan Cisco Packet Tracer dan perangkatnya terdiri dari 3 pc dan sebuah hub untuk menghubungkan ketiga pc tersebut seperti di bawah ini
+
+![Topologi percobaan](asset/topologi.png)
+
+Setelah topologi tersebut terbentuk, alokasikan ip address untuk masing masing pc dengan ketentuan ip address dari masing-masing perangkat masih dalam 1 network. Untuk konfigurasi yang saya lakukan adalah sebagai berikut
+
+![ip configuration](asset/ip%20configuration.png)
+
+setelah konfigurasi ip address sudah sesuai, aktifkan mode simulation pada packet tracer dan reset power cycle device nya
+
+![simulation mode](asset/simulation.png)
+<figcaption align = "center"><b>Simulation Mode</b></figcaption>
+![powercycle](asset/power%20cycle1.png)
+
+![reset power cycle](asset/powercycle2.png)
+
+![hasil power cycle](asset/hasilpowercycle.png)
+
+
 1. ping pc A ke pc B
 
 2. ping lagi dari pc A ke pc B
