@@ -21,10 +21,11 @@ Setelah topologi tersebut terbentuk, alokasikan ip address untuk masing masing p
 
 ![ip configuration](asset/ip%20configuration.png)
 
-setelah konfigurasi ip address sudah sesuai, aktifkan mode simulation pada packet tracer dan reset power cycle device nya
+setelah konfigurasi ip address sudah sesuai, aktifkan mode simulation pada packet tracer
 
 ![simulation mode](asset/simulation.png)
-<figcaption align = "center"><b>Simulation Mode</b></figcaption>
+
+Setelah itu reset power cycle device nya
 
 ![powercycle](asset/power%20cycle1.png)
 
