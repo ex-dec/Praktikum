@@ -1,6 +1,6 @@
 # Praktikum 3 - ARP
 ## A. Definisi
-![arp](/asset/3.arp.png "ARP")
+![arp](asset/3.arp.png "ARP")
 ARP adalah protokol yang berjalan pada osi layer 2 atau data link layer. Protokol ini digunakan untuk memetakan Logical address (IP Address) ke Physical address (MAC Address). Protokol diterapkan untuk memudahkan pc satu dengan yang lain dalam mencari alamat atau posisi dari pc tujuannya.
 
 ## B. rARP
