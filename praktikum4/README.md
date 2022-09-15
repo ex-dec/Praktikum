@@ -64,3 +64,12 @@ Untuk alokasi ip kita konfigurasikan seperti di bawah ini
 |Router0  |Gig0/1   |192.168.1.1/24 |               |
 |         |Gig0/0   |192.168.2.1/24 |               |
 
+Setelah semua sudah dikonfigurasi, sekarang kita coba test ping dari pc0 ke pc 2 yang sudah berbeda network
+
+![ping2](asset/ping2.png)
+
+Dan ternyata pc0 dan pc2 sudah terhubung meskipun kita belum menambahkan routing secara manual ke routernya. Hal itu dikarenakan ketika kita menambahkan ip ke router kita, maka secara otomatis itu juga menambahkan routing ke jaringan tersebut yang directly connected atau terhubung secara langsung. Hal itu bisa kita lihat pada capture dibawah ini 
+
+![tabel routing](asset/tabelrouting.png)
+
+Jika kita menghapus ip router kita pada interface tersebut, maka routing ke jaringan tersebut juga akan ikut terhapus.
