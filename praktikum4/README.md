@@ -17,7 +17,9 @@ Perbedaan dari keduanya hanya pada penerapan tabel routingnya. Kalau kita menggu
 ## D. Percobaan 1 - Static Routing
 
 Pada percobaan ini, kita akan melakukan implementasi dari salah satu jenis routing yaitu static routing. Sebelumnya kita persiapkan terlebih dahulu topologi seperti di bawah ini
+
 ![Topologi](asset/topologi.png)
+
 Untuk alokasi ip kita konfigurasikan seperti di bawah ini 
 
 |Perangkat|Interface|IP Address     |Gateway        |
