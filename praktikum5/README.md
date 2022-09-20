@@ -57,5 +57,92 @@ Dari konfigurasi ip tersebut, mari kita coba implementasi pada kedua metode inte
 ![IP PC0](asset/pc0%20ip.png)
 ![IP PC1](asset/pc1%20ip.png)
 
+Setelah ip dari kedua pc sudah terkonfigurasi dengan baik, mari kita menuju ke metode traditional terlebih dahulu
 
+1. Traditional intervlan
 
+    Pastikan topologi sudah sesuai dengan gambar berikut
+
+    ![Traditional intervlan topologi](asset/traditional%20topologi.png)
+
+    Pada topologi diatas dapat kita pastikan bahwa vlan10 akan dilewatkan melalui port gi0/0 pada router dan gi0/1 pada switch, sedangkan vlan20 akan dilewatkan melalui port gi0/1 pada router dan gi0/2 pada switch. Mari kita tambahkan konfigurasi berikut pada router
+
+        # configure terminal
+        # interface gi 0/0
+        # ip address 192.168.1.1 255.255.255.0
+        # no shutdown
+        # interface gi 0/1
+        # ip address 192.168.2.1 255.255.255.0
+        # no shutdown
+        # exit
+        # exit
+
+    Untuk selanjutnya mari kita konfigurasi swichnya agar bisa menghubungkan jaringan dari router ke pc tujuan. PC0 terhubung dengan switch pada port fa0/1 dan PC1 terhubung dengan switch pada port fa0/2. Dan berikut ini adalah konfigurasi untuk switch
+
+        # configure terminal
+        # interface gi0/1
+        # switchport mode access
+        # switchport access vlan 10
+        # no shutdown
+        # interface gi0/2
+        # switchport mode access
+        # switchport access vlan 20
+        # no shutdown
+        # interface fa0/1
+        # switchport mode access
+        # switchport access vlan 10
+        # no shutdown
+        # interface fa0/2
+        # switchport mode access
+        # switchport access vlan 20
+        # no shutdown
+        # exit
+        # exit
+    
+    Setelah itu kita coba lakukan tes ping untuk PC0 ke PC1
+
+    ![test ping](asset/ping1.png)
+
+2. Router-On-Stick intervlan
+
+    Untuk metode selanjutnya adalah RoS intervlan. Untuk implementasi kali ini, pastikan topologi udh sesuai dengan yang di bawah ini.
+
+    ![RoS topologi](asset/ros%20topologi.png)
+
+    Sedikit penjelasan dari topologi diatas. Router dengan switch dihubungkan oleh kabel yang melalui interface gi0/1 dari router dan gi0/1 dari switch. Kabel tersebut akan mengalirkan vlan 10 dan vlan 20 pada topologi tersebut. Lalu dari switch tersebut akan mengalirkan vlan 10 ke interface fa0/1 dan vlan 20 ke fa0/2. Router pada metode RoS ini akan dikonfigurasi sub interface nya untuk mengalirkan vlan dan mengatur enkapsulasi untuk vlan 10 dan vlan 20. Sedangkan pada switch, dikonfigurasi agar bisa menangkap hasil konfigurasi tersebut menggunakan trunk. Untuk implementasi pada router adalah sebagai berikut
+
+        # configure terminal
+        # interface gi0/1.10
+        # encapsulation dot1q 10
+        # ip address 192.168.1.1 255.255.255.0
+        # no shutdown
+        # interface gi0/1.20
+        # encapsulation dot1q 20
+        # ip address 192.168.2.1 255.255.255.0
+        # no shutdown
+        # interface gi0/1
+        # no shutdown
+        # exit
+        # exit
+
+    Setelah itu kita konfigurasi pada switchnya.
+
+        # configure terminal
+        # interface gi0/1
+        # switchport mode trunk
+        # switchport trunk allow vlan 10,20
+        # no shutdown
+        # interface fa0/1
+        # switchport mode access
+        # switchport access vlan 10
+        # no shutdown
+        # interface fa0/2
+        # switchport mode access
+        # switchport access vlan 20
+        # exit
+        # exit
+
+    Setelah itu kita akan melakukan tes ping dari PC1 ke PC0
+
+    ![test ping ros](asset/ping2.png)
+    
