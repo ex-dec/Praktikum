@@ -1,166 +1,164 @@
-# Praktikum 8 - Static Routing
+# Praktikum 8 - Dynamic Routing
 ## A. Pendahuluan
-Sebelumnya kita sudah pernah membahas tentang static routing. Singkatnya, static routing merupakan metode pencatatan rute pada tabel routing menggunakan cara manual. Rute untuk menuju ke sebuah jaringan atau sebuah host bisa ada lebih dari 1. Maka dalam tabel routing, juga terdapat 1 parameter lagi yaitu distance. Distance digunakan dalam penghitungan metric dari sebuah jalur. Metric disini adalah rangkaian perhitungan yang digunakan untuk memilih prioritas jalur yang bisa dipilih oleh paket. Parameter dalam menghitung metric ada beberapa hal, namun yang paling berpengaruh adalah distance. Dalam praktikum ini, kita akan mencoba routing yang dikonfigurasikan dengan jumlah distance yang berbeda.
+Dynamic Routing adalah salah satu metode untuk membuat routing table secara dinamis. Apabila sebelumnya kita menambahkan routing secara manual ke semua router yang terhubung, maka dengan menggunakan Dynamic routing ini semua tabel routing dari masing-masing router dapat saling bersingkronisasi dan dapat melakukan update tabel routing secara berkala. Dari penjelasan sebelumnya, kita dapat mengklasifikasikan beberapa komponen yang terlibat dengan dynamic routing ini yaitu : 
+1. Neighbour : router yang terhubung dengan router kita dan menggunakan protokol routing dinamis yang sama
+2. Routing Protocol : protokol yang digunakan untuk mengimplementasikan dynamic routing
+3. Routing Database : Data yang di share oleh router 1 dengan yang lain untuk melakukan penulisan tabel routing terbaik menurut protokol masing-masing
 
-## B. Persiapan topologi
-Untuk melakukan percobaan, mari kita bentuk terlebih dahulu topologi seperti di bawah ini
+Semua protokol routing dinamis pasti memiliki ketiga komponen tersebut, yang berbeda hanya metode sharing database dari 1 router ke router yang lain.
+## B. Klasifikasi routing dinamis
+
+Routing dinamis diklasifikasikan berdasarkan cakupan dan metode pemilihan rute dari routing dinamis tersebut. Untuk klasifikasinya adalah sebagai berikut
+
+Klasifikasi cakupan : 
+1. IGP (Interior gateway protocol)
+
+    Routing dengan jenis ini memiliki cakupan dalam 1 autonomous system (AS) saja. Apa itu autonomous system? Autonomous system adalah kumpulan routing yang dibawah kontrol 1 sistem atau admin. sistem atau admin ini sering dianggap sebagai 1 perusahaan yang memiliki kumpulan ip address atau dalam konteks yang lebih umum adalah sebuah ISP.
+
+2. EGP (Exterior gateway protocol)
+
+    Routing dengan jenis ini memiliki cakupan yang lebih luas. Dapat menghubungkan 1 atau lebih Autonomous System dalam sebuah routing protocol dan satu router. Umumnya router yang menggunakan routing protocol dengan jenis ini memiliki spesifikasi yang tinggi dan mampu menghandle tabel routing yang sangat banyak.
+
+Selain klasifikasi cakupan, ada 1 klafisikasi lagi yaitu klasifikasi metode pemilihan jalur : 
+
+1. Distance vector
+
+    Routing dengan klasifikasi ini akan memilih jalur dengan cara melihat apakah jalur yang sudah terdefinisi dalam tabel routing dalam kondisi aktif atau tidak. Ketika statusnya connect maka jalur akan langsung dilewatkan melewati jalur tersebut. Tidak peduli apakah jalur tersebut memiliki traffic yang padat atau tidak. Routing protocol dengan klasifikasi ini antara lain RIP, IGRP, dan EIGRP.
+2. Link-state
+
+    Yang selanjutnya adalah Link-state routing protocol. Routing dengan klasifikasi ini akan melihat status jalur yang sudah terdefinisikan. Apabila link atau jalur yang sudah ada memiliki state padat atau terputus, maka routing dengan klasifikasi ini akan mencari jalur lain yang tercepat dan memiliki traffic yang lebih baik. Routing protocol yang termasuk dalam klasifikasi ini antara lain OSPF dan IS-IS.
+
+## C. Dynamic Routing - RIP
+Pada kesempatan kali ini, kita akan coba mempraktikkan konfigurasi routing dinamis dengan menggunakan protocol RIP. Sedikit kita ulas kembali, pada dasarnya konfigurasi yang wajib adalah konfigurasi network yang akan kita bagikan ke router lain, lalu konfigurasi neighbour atau router lain yang akan menerima routing pada network tersebut. Untuk praktik kali ini kita akan menggunakan topologi yang sama seperti kemarin. Bentuk topologinya adalah sebagai berikut
 
 ![topologi](asset/topologi.png)
 
-Dalam topologi tersebut, dapat kita lihat bahwa jaringan yang sebelah kiri memiliki ip network 192.168.4.0/24, untuk yang sebelah kanan memiliki network 192.168.5.0/24. Untuk menghubungkan kedua network tersebut, terdapat 3 buah router yang terhubung seperti topologi ring. Dari topologi tersebut kita akan mencoba
-3 buah percobaan berikut
-1. Konfigurasi default untuk menghubungkan jaringan 4.0 dan 5.0 menggunakan Router1 dan Router2 serta konfigurasi IP untuk Router0
-2. Melakukan trace jalur yang dilewati paket apakah sudah benar melalui Router1 dan Router2.
-3. Konfigurasi Router0 untuk melakukan routing ke jaringan 4.0 dan 5.0 serta melakukan trace apakah jalurnya berubah.
-4. Konfigurasi Router1 dan Router2 untuk melewatkan paket dari jaringan 4.0 ke 5.0 melalui Router0 dengan menggunakan parameter distance.
+Setelah topologi sudah terbentuk, selanjutnya adalah mengkonfigurasi ip yang sudah tertera pada topologi tersebut. Untuk masing-masing pc disesuaikan dengan network dari masing-masing gateway. 
 
-Sekarang kita akan lakukan percobaan tersebut
+Router0
 
-## C. Percobaan 1 - Konfigurasi default
-
-Tahapan yang bisa kita lakukan pada percobaan ini adalah 
-1. Konfigurasi ip pada masing-masing pc. PC disini karena tidak ada ketentuan dalam memberikan ip maka kita berikan ip yang ke 100 pada jaringan tersebut. Jangan lupa sertakan default gatewaynya juga.
-![ip PC0](asset/ip1.png)
-
-2. Konfigurasi IP dan hostname pada Router1 dan Router2
-
-    Berikut adalah konfigurasi untuk masing-masing router
-
-    Router1
-
-        hostname Router1
-        interface fa6/0
-         ip address 192.168.5.1 255.255.255.0
-         no shutdown
-        interface fa1/0
-         ip address 192.168.3.2 255.255.255.0
-         no shutdown
-        interface fa0/0
-         ip address 192.168.1.1 255.255.255.0
-         no shutdown
-
-    Router2
-
-        hostname Router2
-        interface fa6/0
-         ip address 192.168.4.1 255.255.255.0
-         no shutdown
-        interface fa1/0
-         ip address 192.168.2.1 255.255.255.0
-         no shutdown
-        interface fa0/0
-         ip address 192.168.3.1 255.255.255.0
-         no shutdown
-
-3. Konfigurasi routing static pada Router1 dan Router2
-
-    Karena router tersebut berhubungan secara langsung, maka routing juga langsung kita arahkan ke ip dari masing masing router. Untuk konfigurasinya adalah sebagai berikut
-
-    Router1
-
-        ip route 192.168.4.0 255.255.255.0 192.168.3.1
-
-    Router2
-
-        ip route 192.168.5.0 255.255.255.0 192.168.3.2
-
-4. Pengecekan tabel routing kedua router
-    Setelah dilakukan konfigurasi pada kedua router tersebut, mari kita lakukan pengecekan pada tabel routingnya juga. Perintah yang bisa kita gunakan adalah
-
-        show ip route
-
-    Lakukan perintah tersebut pada posisi privilege user
-
-    ![Routing tabel router1](asset/routingTabel1.png)
-
-    Pada tabel routing tersebut dapat kita lihat bahwa rute menuju jaringan 4.0 melalui gateway 192.168.3.1 dengan distance default yaitu [1/0] atau 1. Sekarang mari kita lihat juga tabel routing dari Router2
-
-    ![Routing tabel router2](asset/routingTabel2.png)
-
-    Pada tabel routing tersebut juga hampir sama dengan yang dimiliki oleh router1. Rute menuju jaringan 5.0 melalui gateway 192.168.3.2 dnegan distance default [1/0] atau 1.
-
-## D. Percobaan 2 - Trace Packet
-Selanjutnya kita bisa melakukan trace packet dari jaringan 4.0 menuju 5.0. Untuk melakukan hal tersebut, kita akan melakukannya di PC0. Untuk hasil percobaan nya adalah sebagai berikut
-
-![trace1](asset/trace1.png)
-
-Dari hasil percobaan tersebut, dapat kita lihat bahwa paket melalui 2 gateway sebelum sampai ke ip tujuan yaitu ip gateway jaringan itu sendiri (192.168.4.1) dan ip dari router1 yang terhubung dengan router2 (192.168.3.2). Berarti paket tersebut sudah melalui jalur yang benar. Maka dari itu mari kita lanjutkan ke percobaan berikutnya.
-
-## E. Percobaan 3 - Konfigurasi IP dan routing Router0
-Selanjutnya adalah konfigurasi router0 agar memiliki routing menuju jaringan 4.0 dan 5.0 .
-Konfigurasinya adalah sebagai berikut
-
-    hostname Router0
-    ip route 192.168.4.0 255.255.255.0 192.168.2.1
-    ip route 192.168.5.0 255.255.255.0 192.168.1.1
-    interface fa0/0
+    interface FastEthernet0/0
      ip address 192.168.1.2 255.255.255.0
      no shutdown
-    interface fa1/0
+    !
+    interface FastEthernet1/0
      ip address 192.168.2.2 255.255.255.0
      no shutdown
 
-Setelah konfigurasi tersebut sudah diterapkan, mari kita cek apakah tabel routingnya sudah sesuai
+Router1
 
-![tabel routing router0](asset/routingtabel0.png)
+    interface FastEthernet0/0
+     ip address 192.168.1.1 255.255.255.0
+     no shutdown
+    !
+    interface FastEthernet1/0
+     ip address 192.168.3.2 255.255.255.0
+     no shutdown
+    !
+    interface FastEthernet6/0
+     ip address 192.168.5.1 255.255.255.0
+     no shutdown
 
-Dari tabel tersebut, dapat kita lihat bahwa konfigurasi sudah sesuai dengan jalurnya. Sekarang mari kita lakukan trace paket sekali lagi dari PC0 menuju PC1
+Router2
 
-![Trace 2](asset/trace2.png)
+    interface FastEthernet0/0
+     ip address 192.168.3.1 255.255.255.0
+     no shutdown
+    !
+    interface FastEthernet1/0
+     ip address 192.168.2.1 255.255.255.0
+     no shutdown
+    !
+    interface FastEthernet6/0
+     ip address 192.168.4.1 255.255.255.0
+     no shutdown
 
-Dari hasil trace tersebut, dapat kita lihat bahwa rute yang dipilih oleh paket masih sama dengan percobaan sebelumnya. Maka dari itu mari kita lakukan percobaan berikutnya.
+Apabila semua sudah disesuaikan, sekarang kita menuju konfigurasi routing RIP nya.
+Konfigurasi pertama yang dapat kita lakukan adalah penentuan versi dari protokol RIP. RIP sendiri memiliki 2 versi yaitu v1 dan v2. untuk perbedaannya sendiri terletak pada network yang di advertise. Pada v1, network yang diadvertise dapat ditentukan prefixnya berapa. Namun untuk v2, kita tidak dapat menentukan prefixnya atau boleh dibilang kita harus menggunakan prefix default pada kelas IP yang ada. Misal kita menggunakan IP Address 192.168.0.1 , IP tersebut termasuk dalam class C dan secara otomatis akan menggunakan prefix 24. Perintah yang dapat digunakan adalah 
 
-## F. Percobaan 4 - Penambahan routing melalui router0
+    router rip
+     version 2
 
-Percobaan kali ini adalah penambahan routing melalui router0 untuk paket dari PC0 menuju PC1, sedangkan dari PC1 menuju PC0 tidak dilewatkan Router0. Konfigurasi yang bisa terapkan adalah sebagai berikut.
-1. Hapus konfigurasi routing pada Router2
-    
-    Sebelum menambahkan routing baru, kita hapus terlebih dahulu routing yang sebelumnya sudah dikonfigurasi pada Router2 dan Router1. Untuk Router2 kita dapat menggunakan perintah sebagai berikut
+Konfigurasi tersebut berlaku untuk kedua router. Konfiguras selanjutnya adalah network yang diadvertise atau dibagikan ke router lain. Untuk perintahnya sendiri cukup sederhana yaitu dengan menggunakan perintah
 
-        no ip route 192.168.5.0 255.255.255.0 192.168.3.2
+    router rip
+     network <ip network>
 
-    Dan untuk Router1 kita dapat menggunakan perintah sebagai berikut
+Untuk penggunaan pada masing-masing router adalah sebagai berikut
 
-        no ip route 192.168.4.0 255.255.255.0 192.168.3.1
+Router0
 
-2. Lakukan konfigurasi static routing baru
+    router rip
+     network 192.168.1.0
+     network 192.168.2.0
 
-    Untuk konfigurasi baru yang kita gunakan disini ada penambahan parameter di belakang gateway yang dilewati oleh paket. Untuk Router1, kita dapat menggunakan perintah sebagai berikut
+Router1
 
-        ip route 192.168.4.0 255.255.255.0 192.168.3.1 9
-        ip route 192.168.4.0 255.255.255.0 192.168.1.2 10
+    router rip
+     network 192.168.1.0
+     network 192.168.3.0
+     network 192.168.5.0
 
-    Pada perintah tersebut mengindikasikan bahwa routing melalui gateway 192.168.3.1 lebih prioritas karena nilai distancenya lebih sedikit.
-    Untuk Router2 perintahnya adalah sebagai berikut
+Router2
 
-        ip route 192.168.5.0 255.255.255.0 192.168.3.2 10
-        ip route 192.168.5.0 255.255.255.0 192.168.2.2 9
+    router rip
+     network 192.168.2.0
+     network 192.168.3.0
+     network 192.168.4.0
 
-3. Pengecekan tabel routing
+Setelah semua network sudah di advertise, sekarang kita akan mengkonfigurasi neighbour dari router tersebut. Untuk neighbour sebenarnya secara otomatis akan ditambahkan ketika kita mengadvertise network tadi. Jadi semua interface yang terhubung dengan network tersebut akan dibroadcast tabel routing oleh routernya sendiri. Namun disini kita akan mengkonfigurasi interface mana yang tidak membutuhkan broadcast tabel routing. Misal pada Router1, interface yang terhubung dengan switch pada client PC1 pasti tidak membutuhkan routing table karena tidak ada router lain yang terhubung dengan switch tersebut. Konfigurasi yang dapat diterapkan adalah passive interface. Perintah yang dapat digunakan antara lain
 
-    Sekarang mari kita cek tabel routing dari kedua router
-    
-    Router1
+    router rip
+     passive-interface <nama interface>
 
-    ![Tabel routing 1 mod](asset/routetable1-mod.png)
+Untuk Router yang terhubung dengan client yaitu Router1 dan Router2, konfigurasinya dapat disesuaikan sebagai berikut
 
-    Pada tabel routing tersebut dapat kita lihat bahwa gateway menuju jaringan 4.0 masih tetap melalui 192.168.3.1 namun memiliki distance yang berbeda yaitu [9/0] atau 9. Sekarang mari kita cek tabel routing dari Router2
+Router1
 
-    ![Tabel routing 2 mod](asset/routetable2-mod.png)
+    router rip
+     passive-interface fa6/0
 
-    Pada tabel routing dari router 2 juga mengalami perubahan namun perubahan tidak hanya ada pada distance saja, melainkan gatewaynya juga berubah melalui 192.168.2.2.
+Router2
 
-4. Trace PC0 menuju PC1
+    router rip
+     passive-interface fa6/0
 
-    Untuk membuktikan konfigurasi tersebut sudah sesuai atau belum, mari kita lakukan trace pada PC0 menuju PC1
+Setelah semua konfigurasi di atas sudah diterapkan, mari kita cek tabel routing pada salah satu router. 
 
-    ![Trace setelah perubahan](asset/trace3.png)
+![routing table R0](asset/routing%20table%20r0.png)
 
-    Dari capture tersebut, dapat kita lihat bahwa gateway yang dilewati oleh paket dari PC0 menuju PC1 bertambah yaitu 192.168.2.2 dan 192.168.3.2. Lalu apakah gateway yang dilewati ketika paket dikirimkan dari PC1 menuju PC0 juga sesuai?
+Dapat kita lihat pada tabel routing tersebut telah ditambahkan juga network 192.168.4.0 dan 5.0 , padahal sebelumnya kita tidak menambahkan rute tersebut. Lalu untuk kode pada masing-masing network yang ditambahakan secara otomatis terdapat kode R yang menandakan entry tersebut dilakukan oleh protokol RIP. 
 
-    ![Trace setelah perubahan2](asset/trace4.png)
+Ketika kita lakukan traceroute dari PC1 ke PC0, hasilnya adalah sebagai berikut
 
-    Ternyata jalur yang dilewati paket ketika paket tersebut berasal dari PC1 menuju PC0 juga sudah sesuai dengan distance pada konfigurasi.
+![tracert 1](asset/tracert1.png)
 
-## G. Kesimpulan
-Kesimpulan yang dapat kita ambil dari praktikum ini adalah konfigurasi pada distance juga mempengaruhi pemilihan jalur pada routing. Jika jalur tersebut putus, apakah langsung hidup konfigurasi yang sebelumnya? Kan tadi yang muncul jalurnya cuma 1? Secara logika jalur yang memiliki distance 10 akan otomatis hidup ketika jalur yang memiliki distance 9 putus. Jadi tidak ada interupsi koneksi antara PC0 dengan PC1. Hal itu sudah sesuai dengan prinsip jaringan yaitu reliability.
+Pada hasil tersebut, dapat kita lihat bahwa paket melewati jalur yang atas dan yaitu gateway 192.168.5.1 dan 192.168.3.1 .
+
+## D. Eksperimen
+
+Pada percobaan kali ini kita akan melakukan eksperimen sedikit tentang routing RIP. Karena semua router dapat membagikan status routing ke router yang lain, maka kita akan melihat seberapa lama update yang diberikan pada semua router. Sebelumnya aktifkan mode simulation untuk melihat lalu lintas broadcast RIP nya dan melihat waktu sinkronasinya. 
+
+![mode simulasi](asset/modesim.png)
+
+selanjutnya, set filternya ke paket rip saja agar memudahkan kita dalam melihat log nya
+
+![filter rip](asset/filterrip.png)
+
+Selanjutnya mari kita putus jalur dari Router1 dengan Router2
+
+![pemotongan jalur](asset/potongJalur.png)
+
+Sekarang kita jalankan prosesnya dengan menekan tombol play pada simulation. Hasilnya adalah sebagai berikut
+
+![update rip](asset/update%20tabel.png)
+
+Dari komunikasi yang telah ditrace oleh mode simulation, dapat kita lihat bahwa proses sinkronasi terjadi cukup lama, antara 5-20 detik. Ini terjadi untuk topologi 3 router. Dapat kita bayangkan bagaimana jika router yang digunakan cukup banyak, seberapa lama jalur yang putus tadi terdeteksi oleh sistem. Sekarang kita coba cek routing table dari router0, apakah ada perubahan atau tidak.
+
+![tabel routing R0 baru](asset/routing%20table%20updated.png)
+
+routing table pada Router0 juga ada perubahan. Perubahan tersebut ada pada network 192.168.3.0 yang terlihat bahwa statusnya down. Sekarang mari kita lihat hasil traceroute terbaru dari PC1 menuju PC0
+
+![tracertUpdated](asset/tracert%20baru.png)
+
+Ternyata gateway yang dilewati oleh paket tersebut bertambah 1 yaitu 192.168.1.2 dan ada perubahan pada gateway selanjutnya yaitu menuju 192.168.2.1
